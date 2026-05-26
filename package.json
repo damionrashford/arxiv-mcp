@@ -16,8 +16,8 @@
     "model-context-protocol"
   ],
   "scripts": {
-    "start": "node --experimental-strip-types server.ts",
-    "dev": "node --watch --experimental-strip-types server.ts"
+    "start": "node --experimental-strip-types src/server.ts",
+    "dev": "node --watch --experimental-strip-types src/server.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
