@@ -19,9 +19,6 @@
     "start": "node --experimental-strip-types server.ts",
     "dev": "node --watch --experimental-strip-types server.ts"
   },
-  "pi": {
-    "extensions": ["./integrations/pi-extension.ts"]
-  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "fast-xml-parser": "^4.5.3",
