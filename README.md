@@ -1,6 +1,6 @@
 # arXiv MCP Server
 
-> **MCP server that turns arXiv into a navigable virtual filesystem.** Browse 2M+ research papers as `arxiv:///` URIs — full-text extraction, per-section files, LaTeX source, structured references, and live category subscriptions. The only TypeScript arXiv MCP with MCP Resources (not just tools).
+> **MCP server that turns arXiv into a navigable virtual filesystem.** Browse 2M+ research papers as `arxiv:///` URIs — full-text extraction, per-section files, LaTeX source, structured references, and live category subscriptions.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![MCP](https://img.shields.io/badge/MCP-1.29-blueviolet)](https://modelcontextprotocol.io)
@@ -11,21 +11,9 @@ Works with **Claude Desktop**, **Claude Code**, **Cursor**, **Windsurf**, **Zed*
 
 ---
 
-## Why this arXiv MCP server?
+## What it does
 
-Every other arXiv MCP gives you search tools that return JSON. This one exposes arXiv as a **browsable virtual filesystem** using MCP Resources — the part of the protocol most servers ignore.
-
-| Feature | This server | Other arXiv MCPs |
-|---|---|---|
-| Language | TypeScript | Python (all of them) |
-| MCP Resources (VFS) | ✅ `arxiv:///` URI scheme | ❌ tools only |
-| Full-text extraction | ✅ HTML-first + PDF fallback | ❌ abstract only |
-| Per-section files | ✅ `sections/s01-introduction.txt` | ❌ |
-| LaTeX source | ✅ extracted from tarball | ❌ |
-| Structured references | ✅ JSON with arXiv IDs | ❌ |
-| Live subscriptions | ✅ `resources/subscribe` + polling | ❌ |
-| Tool output schemas | ✅ full JSON Schema | ❌ |
-| Embedded resources in tools | ✅ | ❌ |
+Exposes arXiv as a **browsable virtual filesystem** using MCP Resources. Navigate subject groups, categories, and papers as `arxiv:///` URIs — then read abstract, full text, LaTeX source, structured references, or individual sections as files.
 
 ---
 
