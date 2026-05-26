@@ -3,9 +3,24 @@
   "version": "1.0.0",
   "type": "module",
   "description": "MCP server exposing arXiv as a browsable virtual filesystem via OAI-PMH + Atom API",
+  "keywords": [
+    "pi-package",
+    "mcp",
+    "arxiv",
+    "research",
+    "papers",
+    "academic",
+    "llm",
+    "ai",
+    "virtual-filesystem",
+    "model-context-protocol"
+  ],
   "scripts": {
     "start": "node --experimental-strip-types server.ts",
     "dev": "node --watch --experimental-strip-types server.ts"
+  },
+  "pi": {
+    "extensions": ["./integrations/pi-extension.ts"]
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
