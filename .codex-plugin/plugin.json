@@ -1,0 +1,34 @@
+{
+  "name": "arxiv-mcp",
+  "version": "1.0.0",
+  "description": "Browse 2M+ arXiv research papers as a virtual filesystem — full text, section files, LaTeX source, structured references, and live category subscriptions via the arxiv:/// URI scheme.",
+  "author": {
+    "name": "Damion Rashford",
+    "url": "https://github.com/damionrashford"
+  },
+  "homepage": "https://github.com/damionrashford/arxiv-mcp",
+  "repository": "https://github.com/damionrashford/arxiv-mcp",
+  "license": "MIT",
+  "keywords": [
+    "arxiv",
+    "mcp",
+    "research",
+    "papers",
+    "academic",
+    "llm",
+    "ai",
+    "virtual-filesystem",
+    "model-context-protocol"
+  ],
+  "interface": {
+    "displayName": "arXiv MCP",
+    "shortDescription": "Browse 2M+ arXiv papers as a virtual filesystem.",
+    "longDescription": "Exposes arXiv as a browsable virtual filesystem using MCP Resources. Navigate subject groups, categories, and papers as arxiv:/// URIs — then read the abstract, full text, LaTeX source, structured references, or individual sections as files. Includes arxiv_search, arxiv_get_paper, and arxiv_list_categories tools with full structured output schemas.",
+    "developerName": "Damion Rashford",
+    "category": "research",
+    "capabilities": ["mcp", "tools", "resources"],
+    "websiteURL": "https://github.com/damionrashford/arxiv-mcp"
+  },
+  "mcpServers": "./.mcp.json",
+  "skills": "./skills/"
+}
