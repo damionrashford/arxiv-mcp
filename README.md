@@ -47,7 +47,7 @@ One command. No path configuration needed.
 claude plugin install github:damionrashford/arxiv-mcp
 ```
 
-The plugin auto-wires the `arxiv` MCP server and the `arxiv-researcher` subagent. Ask Claude to find papers, read abstracts, or fetch a paper by ID — it routes automatically.
+The plugin auto-wires the `arxiv` MCP server. Ask Claude to find papers, read abstracts, or fetch a paper by ID.
 
 To verify it loaded:
 
@@ -309,10 +309,6 @@ arxiv-mcp/
     cache.ts                       ← TTL in-memory cache
     helpers.ts
     schemas.ts
-  agents/
-    arxiv-researcher.md            ← Claude Code subagent
-  skills/
-    arxiv-research/SKILL.md        ← Claude Code + Codex skill
   integrations/
     codex.toml                     ← Codex CLI manual config snippet
     pi-extension.ts                ← Pi extension (bundled via Pi package)
