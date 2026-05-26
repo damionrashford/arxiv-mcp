@@ -122,21 +122,24 @@ tool_timeout_sec = 120
 default_tools_approval_mode = "auto"
 ```
 
-The full config with per-tool overrides is in [`integrations/codex.toml`](integrations/codex.toml).
+Add per-tool overrides if needed:
+
+```toml
+[mcp_servers.arxiv.tools.arxiv_search]
+approval_mode = "auto"
+
+[mcp_servers.arxiv.tools.arxiv_get_paper]
+approval_mode = "auto"
+
+[mcp_servers.arxiv.tools.arxiv_list_categories]
+approval_mode = "auto"
+```
 
 ---
 
-### Pi Coding Agent — package
+### Pi Coding Agent
 
-Install directly from GitHub using the `pi install` command:
-
-```bash
-pi install git:github.com/damionrashford/arxiv-mcp
-```
-
-This installs the Pi extension, which adds `/arxiv-search`, `/arxiv-paper`, and `/arxiv-categories` slash commands.
-
-Then add the MCP server to your project's `.mcp.json`:
+**Step 1** — Add the arXiv server to your project's `.mcp.json`. Pi requires [pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) — install it once with `pi install npm:pi-mcp-adapter`.
 
 ```json
 {
@@ -150,15 +153,46 @@ Then add the MCP server to your project's `.mcp.json`:
 }
 ```
 
-> Pi requires [pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) to connect MCP servers. Install it once with `pi install npm:pi-mcp-adapter`.
+**Step 2 (optional)** — Add `/arxiv-search`, `/arxiv-paper`, and `/arxiv-categories` slash commands. Create `~/.pi/agent/extensions/arxiv.ts`:
 
-**Extension commands** (available after install):
+```typescript
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-| Command | Description |
-|---|---|
-| `/arxiv-search <query>` | Search papers with full Atom syntax |
-| `/arxiv-paper <id>` | Fetch a paper by arXiv ID |
-| `/arxiv-categories [group]` | List categories, optionally filtered |
+export default function (pi: ExtensionAPI) {
+  pi.registerCommand("arxiv-search", {
+    description: "Search arXiv — /arxiv-search <query>",
+    handler: async (args, ctx) => {
+      if (!args.trim()) { ctx.ui.notify("Usage: /arxiv-search <query>", "warning"); return; }
+      if (!ctx.isIdle()) { ctx.ui.notify("Agent is busy", "warning"); return; }
+      pi.sendUserMessage(`Search arXiv for: ${args.trim()}. Use arxiv_search with field prefixes and return the top 5 results with title, authors, date, and abstract summary.`);
+    },
+  });
+
+  pi.registerCommand("arxiv-paper", {
+    description: "Fetch arXiv paper — /arxiv-paper <id>",
+    handler: async (args, ctx) => {
+      if (!args.trim()) { ctx.ui.notify("Usage: /arxiv-paper 2501.12345", "warning"); return; }
+      if (!ctx.isIdle()) { ctx.ui.notify("Agent is busy", "warning"); return; }
+      pi.sendUserMessage(`Fetch arXiv paper ${args.trim()} using arxiv_get_paper. Return title, authors, date, categories, abstract, and links.`);
+    },
+  });
+
+  pi.registerCommand("arxiv-categories", {
+    description: "List arXiv categories — /arxiv-categories [group]",
+    handler: async (args, ctx) => {
+      if (!ctx.isIdle()) { ctx.ui.notify("Agent is busy", "warning"); return; }
+      pi.sendUserMessage(args.trim()
+        ? `List arXiv categories in the "${args.trim()}" group using arxiv_list_categories.`
+        : `List all arXiv subject groups using arxiv_list_categories.`);
+    },
+  });
+
+  pi.on("session_start", async (_event, ctx) => {
+    if (pi.getAllTools().some((t) => t.name.startsWith("arxiv")))
+      ctx.ui.notify("arXiv ready — /arxiv-search, /arxiv-paper, /arxiv-categories", "info");
+  });
+}
+```
 
 ---
 
@@ -309,14 +343,9 @@ arxiv-mcp/
     cache.ts                       ← TTL in-memory cache
     helpers.ts
     schemas.ts
-  integrations/
-    codex.toml                     ← Codex CLI manual config snippet
-    pi-extension.ts                ← Pi extension (bundled via Pi package)
-  .claude-plugin/plugin.json       ← Claude Code plugin manifest
-  .codex-plugin/plugin.json        ← Codex CLI plugin manifest
-  .cursor-plugin/plugin.json       ← Cursor plugin manifest
-  .mcp.json                        ← MCP server definition (Claude Code + Codex plugins)
-  mcp.json                         ← MCP server definition (Cursor plugin)
+  .claude-plugin/plugin.json        ← Claude Code plugin manifest
+  .codex-plugin/plugin.json         ← Codex CLI plugin manifest
+  .cursor-plugin/plugin.json        ← Cursor plugin manifest
 ```
 
 ---
