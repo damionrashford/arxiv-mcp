@@ -60,7 +60,7 @@ claude mcp list
 ### Claude Code — manual
 
 ```bash
-claude mcp add arxiv -- node --experimental-strip-types /absolute/path/to/arxiv-mcp/server.ts
+claude mcp add arxiv -- node --experimental-strip-types /absolute/path/to/arxiv-mcp/src/server.ts
 ```
 
 Or add to your project's `.mcp.json`:
@@ -70,7 +70,7 @@ Or add to your project's `.mcp.json`:
   "mcpServers": {
     "arxiv": {
       "command": "node",
-      "args": ["--experimental-strip-types", "/absolute/path/to/arxiv-mcp/server.ts"]
+      "args": ["--experimental-strip-types", "/absolute/path/to/arxiv-mcp/src/server.ts"]
     }
   }
 }
@@ -87,7 +87,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "arxiv": {
       "command": "node",
-      "args": ["--experimental-strip-types", "/absolute/path/to/arxiv-mcp/server.ts"]
+      "args": ["--experimental-strip-types", "/absolute/path/to/arxiv-mcp/src/server.ts"]
     }
   }
 }
@@ -115,7 +115,7 @@ Then install via the Codex app or CLI.
 ```toml
 [mcp_servers.arxiv]
 command = "node"
-args = ["--experimental-strip-types", "/path/to/arxiv-mcp/server.ts"]
+args = ["--experimental-strip-types", "/path/to/arxiv-mcp/src/server.ts"]
 enabled = true
 startup_timeout_sec = 30
 tool_timeout_sec = 120
@@ -146,7 +146,7 @@ approval_mode = "auto"
   "mcpServers": {
     "arxiv": {
       "command": "node",
-      "args": ["--experimental-strip-types", "/path/to/arxiv-mcp/server.ts"],
+      "args": ["--experimental-strip-types", "/path/to/arxiv-mcp/src/server.ts"],
       "directTools": ["arxiv_search", "arxiv_get_paper", "arxiv_list_categories"]
     }
   }
@@ -216,7 +216,7 @@ Cursor discovers the plugin automatically from `~/.cursor/plugins/local/`.
   "mcpServers": {
     "arxiv": {
       "command": "node",
-      "args": ["--experimental-strip-types", "/absolute/path/to/arxiv-mcp/server.ts"]
+      "args": ["--experimental-strip-types", "/absolute/path/to/arxiv-mcp/src/server.ts"]
     }
   }
 }
@@ -233,7 +233,7 @@ Add the same `command` + `args` to your client's MCP server config:
   "mcpServers": {
     "arxiv": {
       "command": "node",
-      "args": ["--experimental-strip-types", "/absolute/path/to/arxiv-mcp/server.ts"]
+      "args": ["--experimental-strip-types", "/absolute/path/to/arxiv-mcp/src/server.ts"]
     }
   }
 }
@@ -330,22 +330,25 @@ arXiv rate-limits to ~3s between requests. The cache makes repeated navigation i
 
 ```
 arxiv-mcp/
-  server.ts                        ← entry point
-  resources/arxiv.ts               ← arxiv:/// virtual filesystem + routing
-  tools/
-    arxiv_search.ts
-    arxiv_get_paper.ts
-    arxiv_list_categories.ts
-  lib/
-    api.ts                         ← OAI-PMH + Atom API
-    extract.ts                     ← HTML extraction, sections, TeX tarball
-    subscribe.ts                   ← resources/subscribe + 30-min polling
-    cache.ts                       ← TTL in-memory cache
-    helpers.ts
-    schemas.ts
-  .claude-plugin/plugin.json        ← Claude Code plugin manifest
-  .codex-plugin/plugin.json         ← Codex CLI plugin manifest
-  .cursor-plugin/plugin.json        ← Cursor plugin manifest
+  src/
+    server.ts                      ← entry point
+    resources/arxiv.ts             ← arxiv:/// virtual filesystem + routing
+    tools/
+      arxiv_search.ts
+      arxiv_get_paper.ts
+      arxiv_list_categories.ts
+    lib/
+      api.ts                       ← OAI-PMH + Atom API
+      extract.ts                   ← HTML extraction, sections, TeX tarball
+      subscribe.ts                 ← resources/subscribe + 30-min polling
+      cache.ts                     ← TTL in-memory cache
+      helpers.ts
+      schemas.ts
+  .claude-plugin/plugin.json       ← Claude Code plugin manifest
+  .codex-plugin/plugin.json        ← Codex CLI plugin manifest
+  .cursor-plugin/plugin.json       ← Cursor plugin manifest
+  package.json
+  tsconfig.json
 ```
 
 ---
