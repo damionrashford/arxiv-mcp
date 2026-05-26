@@ -29,6 +29,4 @@
     "capabilities": ["mcp", "tools", "resources"],
     "websiteURL": "https://github.com/damionrashford/arxiv-mcp"
   },
-  "mcpServers": "./.mcp.json",
-  "skills": "./skills/"
 }
