@@ -1,0 +1,25 @@
+{
+  "name": "arxiv-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP server exposing arXiv as a browsable virtual filesystem via OAI-PMH + Atom API",
+  "scripts": {
+    "start": "node --experimental-strip-types server.ts",
+    "dev": "node --watch --experimental-strip-types server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "fast-xml-parser": "^4.5.3",
+    "node-html-parser": "^7.1.0",
+    "pdf-parse": "^2.4.5",
+    "tar-stream": "^3.2.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/tar-stream": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
