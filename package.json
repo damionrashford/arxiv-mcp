@@ -16,8 +16,10 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.75.5",
     "@types/node": "^25.9.1",
-    "@types/tar-stream": "^3.1.4"
+    "@types/tar-stream": "^3.1.4",
+    "typebox": "^1.1.38"
   },
   "engines": {
     "node": ">=22"
