@@ -51,6 +51,19 @@ export function register(server: McpServer): void {
         throw notFound(uri.href);
       }
 
+      // ── /paper/{id} — direct lookup without knowing category ───────────────
+      if (parts[0] === 'paper') {
+        if (parts.length === 1) return txt(uri, 'Navigate to arxiv:///paper/{id}/ — e.g. arxiv:///paper/2501.12948/');
+        if (parts.length === 2) return await paperDir(uri);
+        if (parts.length === 3) {
+          if (parts[2] === 'sections') return await sectionsDir(uri, parts[1]);
+          return await paperFile(uri, parts[1], parts[2]);
+        }
+        if (parts.length === 4 && parts[2] === 'sections')
+          return await sectionFile(uri, parts[1], parts[3]);
+        throw notFound(uri.href);
+      }
+
       // ── /{group} or /{cat} ──────────────────────────────────────────────────
       if (parts.length === 1) {
         const allSets = await listSets();
