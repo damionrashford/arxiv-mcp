@@ -7,33 +7,53 @@
 [![Node](https://img.shields.io/badge/Node.js-%E2%89%A522-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+Works with **Claude Code**, **Claude Desktop**, **OpenAI Codex CLI**, **Pi**, **Cursor**, **Windsurf**, **Zed**, and any MCP-compatible client.
+
 ---
 
 ## What it does
 
 Exposes arXiv as a **browsable virtual filesystem** using MCP Resources. Navigate subject groups, categories, and papers as `arxiv:///` URIs — then read the abstract, full text, LaTeX source, structured references, or individual sections as files.
 
-Three tools handle everything the filesystem doesn't cover:
+Three tools handle search and retrieval:
 
-- **`arxiv_search`** — full Atom API query syntax with field prefixes and boolean operators
-- **`arxiv_get_paper`** — metadata returned embedded (no second fetch needed) plus links to every file
+- **`arxiv_search`** — full Atom API query syntax with field prefixes (`ti:`, `au:`, `cat:`, `abs:`) and boolean operators
+- **`arxiv_get_paper`** — metadata returned embedded in one call, plus resource links to every file
 - **`arxiv_list_categories`** — live OAI-PMH taxonomy, optionally filtered by subject group
+
+---
+
+## Requirements
+
+- Node.js ≥ 22 (run `node --version` to check)
+- Network access to `arxiv.org`, `export.arxiv.org`, `oaipmh.arxiv.org`
+
+Clone and install dependencies once:
+
+```bash
+git clone https://github.com/damionrashford/arxiv-mcp
+cd arxiv-mcp && npm install
+```
 
 ---
 
 ## Install
 
-### Claude Code — plugin (one command)
+### Claude Code — plugin
+
+One command. No path configuration needed.
 
 ```bash
 claude plugin install github:damionrashford/arxiv-mcp
 ```
 
-The plugin auto-wires the `arxiv` MCP server and an `arxiv-researcher` subagent. No path configuration needed — `${CLAUDE_PLUGIN_ROOT}` resolves automatically.
+The plugin auto-wires the `arxiv` MCP server and the `arxiv-researcher` subagent. Ask Claude to find papers, read abstracts, or fetch a paper by ID — it routes automatically.
 
-> Requires Node.js ≥ 22 on your machine. Run `node --version` to check.
+To verify it loaded:
 
-After installing, ask Claude to search for papers, read abstracts, or fetch a paper by ID — it routes to the `arxiv-researcher` agent automatically.
+```bash
+claude mcp list
+```
 
 ---
 
@@ -75,9 +95,22 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ---
 
-### OpenAI Codex CLI
+### OpenAI Codex CLI — plugin
 
-Add to `~/.codex/config.toml` (user-global) or `.codex/config.toml` (project-local, must be a trusted directory):
+Install directly from the Codex plugin marketplace or browse via `/plugins` in the Codex CLI.
+
+To install from the marketplace source, add to your workspace's `.agents/plugins/marketplace.json`:
+
+```json
+{
+  "name": "arxiv-mcp",
+  "source": { "github": { "repo": "damionrashford/arxiv-mcp" } }
+}
+```
+
+Then install via the Codex app or CLI.
+
+**Manual config** — add to `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.arxiv]
@@ -93,17 +126,17 @@ The full config with per-tool overrides is in [`integrations/codex.toml`](integr
 
 ---
 
-### Pi Coding Agent
+### Pi Coding Agent — package
 
-**Step 1** — Install [pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) if you don't have it:
+Install directly from GitHub using the `pi install` command:
 
 ```bash
-pi install npm:pi-mcp-adapter
+pi install git:github.com/damionrashford/arxiv-mcp
 ```
 
-Restart Pi after installation.
+This installs the Pi extension, which adds `/arxiv-search`, `/arxiv-paper`, and `/arxiv-categories` slash commands.
 
-**Step 2** — Add the arXiv server to your project's `.mcp.json`:
+Then add the MCP server to your project's `.mcp.json`:
 
 ```json
 {
@@ -117,23 +150,32 @@ Restart Pi after installation.
 }
 ```
 
-**Step 3 (optional)** — Install the companion extension for `/arxiv-search`, `/arxiv-paper`, and `/arxiv-categories` slash commands:
+> Pi requires [pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) to connect MCP servers. Install it once with `pi install npm:pi-mcp-adapter`.
 
-```bash
-# Global — available in all projects
-cp integrations/pi-extension.ts ~/.pi/agent/extensions/arxiv.ts
+**Extension commands** (available after install):
 
-# Or project-local
-cp integrations/pi-extension.ts .pi/extensions/arxiv.ts
-```
-
-Once installed, the extension notifies you when arXiv tools are active and lets you trigger searches directly from the command bar.
+| Command | Description |
+|---|---|
+| `/arxiv-search <query>` | Search papers with full Atom syntax |
+| `/arxiv-paper <id>` | Fetch a paper by arXiv ID |
+| `/arxiv-categories [group]` | List categories, optionally filtered |
 
 ---
 
-### Cursor, Windsurf, Zed
+### Cursor — plugin
 
-Add to your client's MCP server config (same `command` + `args` as above):
+**Option 1: Marketplace** — browse `cursor.com/marketplace`, search for `arxiv-mcp`, and install.
+
+**Option 2: Local install** — clone the repo into `~/.cursor/plugins/local/arxiv-mcp/`:
+
+```bash
+git clone https://github.com/damionrashford/arxiv-mcp ~/.cursor/plugins/local/arxiv-mcp
+cd ~/.cursor/plugins/local/arxiv-mcp && npm install
+```
+
+Cursor discovers the plugin automatically from `~/.cursor/plugins/local/`.
+
+**Option 3: Manual MCP config** — add to Cursor's MCP settings (Settings → MCP):
 
 ```json
 {
@@ -148,99 +190,90 @@ Add to your client's MCP server config (same `command` + `args` as above):
 
 ---
 
-## Requirements
+### Windsurf, Zed
 
-- Node.js ≥ 22 (`--experimental-strip-types` flag)
-- Network access to `arxiv.org`, `export.arxiv.org`, `oaipmh.arxiv.org`
+Add the same `command` + `args` to your client's MCP server config:
 
-Clone and install dependencies once:
-
-```bash
-git clone https://github.com/damionrashford/arxiv-mcp
-cd arxiv-mcp
-npm install
+```json
+{
+  "mcpServers": {
+    "arxiv": {
+      "command": "node",
+      "args": ["--experimental-strip-types", "/absolute/path/to/arxiv-mcp/server.ts"]
+    }
+  }
+}
 ```
 
 ---
 
 ## The `arxiv:///` virtual filesystem
 
-Navigate arXiv like a file tree. Each level reveals the next:
+Navigate arXiv like a file tree:
 
 ```
 arxiv:///                           ← all subject groups (cs, math, physics, …)
 arxiv:///cs                         ← categories in cs (cs.AI, cs.LG, cs.CL, …)
 arxiv:///cs.AI                      ← 25 most-recent papers in cs.AI
 arxiv:///cs.AI/2501.12345/          ← paper directory
-  ├── metadata.json                 ← title, authors, dates, DOI, URLs
-  ├── abstract.txt                  ← full abstract
-  ├── paper.txt                     ← full text (HTML→text, PDF fallback)
-  ├── source.tex                    ← main LaTeX file from source tarball
-  ├── references.json               ← bibliography with linked arXiv IDs
+  ├── metadata.json                 ← title, authors, dates, DOI, URLs       (priority 0.95)
+  ├── abstract.txt                  ← full abstract                          (priority 0.90)
+  ├── paper.txt                     ← full text (HTML→text, PDF fallback)    (priority 0.70)
+  ├── references.json               ← bibliography with linked arXiv IDs     (priority 0.75)
+  ├── source.tex                    ← main LaTeX file from source tarball    (priority 0.50)
   └── sections/
         ├── s01-introduction.txt
         ├── s02-related-work.txt
-        └── s03-methodology.txt …
+        └── s03-methodology.txt …   (priority 0.60)
 arxiv:///search/transformer+llm/    ← keyword search results
 ```
 
-Every entry carries MCP annotations: `audience`, `priority` (0.5–0.95), and `lastModified` from the paper's update date. Clients and LLMs use these to prioritize what to read.
+Every entry carries MCP annotations: `audience`, `priority`, and `lastModified`. Clients use these to prioritize what to read.
 
 ---
 
 ## Tools
 
-All three tools return both `content` (MCP content blocks for LLMs) and `structuredContent` (typed JSON matching the output schema) — so they work for both LLM context injection and programmatic use.
+All three tools return both `content` (MCP content blocks) and `structuredContent` (typed JSON matching the output schema).
 
 ### `arxiv_search`
 
-Search arXiv using the full Atom API query syntax. Returns `resource_link` content blocks pointing to browsable paper directories.
+Search using the full Atom API query syntax. Returns `resource_link` content blocks pointing to browsable paper directories.
 
 ```
-Field prefixes:  ti:(title)  au:(author)  cat:(category)  abs:(abstract)  all:(all fields)
-Operators:       AND  OR  ANDNOT
-
-Examples:
-  "ti:attention mechanism AND cat:cs.AI"
-  "au:lecun AND cat:cs.LG"
-  "cat:cs.CL AND ti:large language model"
-  "abs:diffusion model AND cat:cs.CV"
+ti:attention mechanism AND cat:cs.AI
+au:lecun AND cat:cs.LG
+cat:cs.CL AND ti:large language model
+abs:diffusion model AND cat:cs.CV
 ```
 
 ### `arxiv_get_paper`
 
-Fetch a paper by arXiv ID. Returns an **embedded** `metadata.json` resource (immediately readable by the LLM) plus `resource_link` items for all paper files.
+Fetch a paper by arXiv ID. Returns an **embedded** `metadata.json` resource (immediately readable) plus `resource_link` items for all paper files.
 
 ```
-"2501.12345"      → new-style ID
-"cs/9901002"      → old-style ID
-"2301.07041"      → example: Verifiable Fully Homomorphic Encryption
+2501.12345      → new-style ID
+cs/9901002      → old-style ID
 ```
 
 ### `arxiv_list_categories`
 
-Full live taxonomy fetched from the OAI-PMH API — no hardcoded category lists. Optional `group` filter.
-
-```
-groups: cs, math, physics, econ, eess, q-bio, q-fin, stat
-```
+Full live taxonomy from the OAI-PMH API. Optional `group` filter: `cs`, `math`, `physics`, `econ`, `eess`, `q-bio`, `q-fin`, `stat`.
 
 ---
 
-## MCP features
-
-This server uses the full MCP protocol surface, not just tools:
+## MCP features used
 
 - **`resources` capability** with `subscribe: true` and `listChanged: true`
 - **Resource templates** — RFC 6570 `arxiv://{+path}` URI template
 - **Resource annotations** — `audience`, `priority`, `lastModified` on every entry
 - **`resources/subscribe`** — subscribe to `arxiv:///{cat}`, get `notifications/resources/updated` when new papers arrive (30-min poll)
 - **`notifications/resources/list_changed`** — fires when a subscribed category's paper list changes
-- **Embedded resources** — `arxiv_get_paper` returns metadata inline so the LLM doesn't need a second fetch
-- **Resource links** — tools return `type: "resource_link"` so clients can fetch or subscribe to results
+- **Embedded resources** — `arxiv_get_paper` returns metadata inline, no second fetch
+- **Resource links** — tools return `type: "resource_link"` so clients can fetch or subscribe
 - **Tool annotations** — `readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`
-- **Tool output schemas** — full JSON Schema draft-07 on all three tools
-- **Structured content** — `structuredContent` alongside `content` in every tool result
+- **Tool output schemas** — full JSON Schema on all three tools
+- **Structured content** — `structuredContent` alongside `content` in every result
 - **`isError`** — error paths return `isError: true` with actionable text for LLM self-correction
 
 ---
@@ -249,13 +282,13 @@ This server uses the full MCP protocol surface, not just tools:
 
 | Data | TTL |
 |---|---|
-| OAI-PMH taxonomy (all categories) | 24 hours |
+| OAI-PMH taxonomy | 24 hours |
 | Paper metadata + search results | 1 hour |
-| Extracted HTML text / sections / references | 1 hour |
+| Extracted text, sections, references | 1 hour |
 | LaTeX source | 1 hour |
 | PDF text (fallback) | 1 hour |
 
-arXiv rate-limits requests to ~3s between calls. The cache means repeated navigation is instant.
+arXiv rate-limits to ~3s between requests. The cache makes repeated navigation instant.
 
 ---
 
@@ -263,28 +296,31 @@ arXiv rate-limits requests to ~3s between calls. The cache means repeated naviga
 
 ```
 arxiv-mcp/
-  server.ts                  ← entry point
-  resources/
-    arxiv.ts                 ← arxiv:/// virtual filesystem resource + routing
+  server.ts                        ← entry point
+  resources/arxiv.ts               ← arxiv:/// virtual filesystem + routing
   tools/
-    arxiv_search.ts          ← search tool
-    arxiv_get_paper.ts       ← get paper tool
-    arxiv_list_categories.ts ← list categories tool
+    arxiv_search.ts
+    arxiv_get_paper.ts
+    arxiv_list_categories.ts
   lib/
-    api.ts                   ← OAI-PMH ListSets + Atom search/fetch
-    extract.ts               ← HTML extraction, sections, references, TeX tarball
-    subscribe.ts             ← resources/subscribe + 30-min polling
-    cache.ts                 ← TTL in-memory cache
-    helpers.ts               ← annotation builder, READ_ONLY hints, notFound error
-    schemas.ts               ← shared Zod schemas
+    api.ts                         ← OAI-PMH + Atom API
+    extract.ts                     ← HTML extraction, sections, TeX tarball
+    subscribe.ts                   ← resources/subscribe + 30-min polling
+    cache.ts                       ← TTL in-memory cache
+    helpers.ts
+    schemas.ts
   agents/
-    arxiv-researcher.md      ← Claude Code subagent definition
+    arxiv-researcher.md            ← Claude Code subagent
+  skills/
+    arxiv-research/SKILL.md        ← Claude Code + Codex skill
   integrations/
-    codex.toml               ← OpenAI Codex CLI config snippet
-    pi-extension.ts          ← Pi coding agent extension
-  .claude-plugin/
-    plugin.json              ← Claude Code plugin manifest
-  .mcp.json                  ← MCP server definition (plugin + project scope)
+    codex.toml                     ← Codex CLI manual config snippet
+    pi-extension.ts                ← Pi extension (bundled via Pi package)
+  .claude-plugin/plugin.json       ← Claude Code plugin manifest
+  .codex-plugin/plugin.json        ← Codex CLI plugin manifest
+  .cursor-plugin/plugin.json       ← Cursor plugin manifest
+  .mcp.json                        ← MCP server definition (Claude Code + Codex plugins)
+  mcp.json                         ← MCP server definition (Cursor plugin)
 ```
 
 ---
