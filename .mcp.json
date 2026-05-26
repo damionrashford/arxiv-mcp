@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "arxiv": {
-      "command": "node",
-      "args": ["--experimental-strip-types", "${CLAUDE_PLUGIN_ROOT}/server.ts"],
-      "type": "stdio"
-    }
-  }
-}
